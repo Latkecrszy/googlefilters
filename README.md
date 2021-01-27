@@ -1,1 +1,2 @@
 # googlefilters
+Google Filters is a discord bot and soon to be website where you can apply convinient filters to your google searches! Just select the websites and extensions you would like to include in your search results, and Google Filters will automatically filter your results accordingly. You can invite it <a href="https://discord.com/api/oauth2/authorize?client_id=795792546022424587&permissions=2048&scope=bot">here.</a>
