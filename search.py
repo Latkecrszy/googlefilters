@@ -113,12 +113,15 @@ class Search(commands.Cog):
                     filters['false']['site'].append(message.content.lower())
         page = f"https://google.com/search?q={article}"
         pageNum = 1
+        displayPage = 1
         embed = discord.Embed(title=f"Results for {original}")
         article = await self.request(
             f"{page}&start={(pageNum - 1) * 10}")
         soup = BeautifulSoup(article.content, 'html.parser')
         links = find_all(str(soup), filters)
-        while len(list(links.keys())) < 5:
+        breakpage = 0
+        while len(list(links.keys())) < 5 and breakpage < 5:
+            breakpage += 1
             print("adding")
             pageNum += 1
             additional_article = await self.request(
@@ -130,7 +133,7 @@ class Search(commands.Cog):
         print("escaped")
         for key, value in links.items():
             embed.add_field(name=value[0], value=f"[Link]({key})", inline=False)
-        embed.set_footer(text=f"Use ⬅️ and ️➡️ to navigate pages | Page {pageNum}")
+        embed.set_footer(text=f"Use ⬅️ and ️➡️ to navigate pages | Page {displayPage}")
         message = await ctx.send(embed=embed)
         await message.add_reaction("⬅️")
         await message.add_reaction("➡️")
@@ -145,10 +148,12 @@ class Search(commands.Cog):
                 break
             if str(reaction) in ["▶️", "▶", "➡️"]:
                 pageNum += 1
+                displayPage += 1
                 await message.remove_reaction(str(reaction), user)
             elif str(reaction) in ["◀️", "️️️◀", "⬅️"]:
                 if pageNum > 0:
                     pageNum -= 1
+                    displayPage -= 1
             if str(reaction) in ["▶️", "▶", "➡️", "◀️", "️️️◀", "⬅️"]:
                 await message.remove_reaction(str(reaction), user)
                 if pageNum > 0:
@@ -171,13 +176,14 @@ class Search(commands.Cog):
                     for key, value in links.items():
                         embed.add_field(name=value[0], value=f"[Link]({key})", inline=False)
                     embed.set_footer(
-                        text=f"Use ⬅️ and ️➡️ to navigate pages | Page {pageNum}")
+                        text=f"Use ⬅️ and ️➡️ to navigate pages | Page {displayPage}")
                     await message.edit(embed=embed)
 
 
     async def embed(self, links, ctx, original):
         if links:
             pass
+
 
 def setup(bot):
     bot.add_cog(Search(bot))
